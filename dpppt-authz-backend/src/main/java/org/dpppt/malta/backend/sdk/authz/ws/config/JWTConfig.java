@@ -71,9 +71,9 @@ public class JWTConfig {
 			// @formatter:on
 		}
 		
-		@Value("authz.redeem.credentials.username")
+		@Value("authz.redeem.credentials.username:testuser")
 		String username;
-		@Value("authz.redeem.credentials.password")
+		@Value("authz.redeem.credentials.password:password")
 		String password;
 		
 		@Bean
@@ -99,7 +99,7 @@ public class JWTConfig {
 		@Value("${ws.app.jwt.maxValidityMinutes: 60}")
 		int maxValidityMinutes;
 
-		@Value("authz.jwt.validator.audience")
+		@Value("${authz.jwt.validator.audience}")
 		String jwtValidatorAud;
 		
 		@Override
