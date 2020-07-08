@@ -71,9 +71,9 @@ public class JWTConfig {
 			// @formatter:on
 		}
 		
-		@Value("authz.redeem.credentials.username:testuser")
+		@Value("${authz.redeem.credentials.username:testuser}")
 		String username;
-		@Value("authz.redeem.credentials.password:password")
+		@Value("${authz.redeem.credentials.password:password}")
 		String password;
 		
 		@Bean
