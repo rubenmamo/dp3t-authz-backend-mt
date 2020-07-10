@@ -32,5 +32,5 @@ CREATE TABLE t_token_log (
  uuid Character varying(50) NOT NULL, 
  issued_at Timestamp with time zone NOT NULL,
  PRIMARY KEY (pk_token_id),
- FOREIGN KEY (fk_covid_code_id) REFERENCES t_covid_code (pk_covid_code_id)
+ FOREIGN KEY (fk_covid_code_id) REFERENCES t_covid_code (pk_covid_code_id) ON DELETE CASCADE
 );

@@ -10,6 +10,7 @@
 
 package org.dpppt.malta.backend.sdk.authz.data;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -43,5 +44,7 @@ public interface AuthzDataService {
 	void updateRedeemed(int id, Instant at);
 	
 	public int insertTokenIssueLog(CovidCode covidCode, Instant issuedAt, UUID uuid);
+	
+	void cleanDB(Duration retentionPeriod);
 	
 }

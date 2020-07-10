@@ -11,8 +11,12 @@
 package org.dpppt.malta.backend.sdk.authz.data;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -283,6 +287,18 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 		params.addValue("specimen_no", specimenNumber);
 		
 		return jt.queryForObject(sql, params, Integer.class) != 0;
+	}
+
+	@Override
+	public void cleanDB(Duration retentionPeriod) {
+		OffsetDateTime retentionTime = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC)
+				.minus(retentionPeriod);
+		logger.info("Cleanup DB entries before: " + retentionTime);
+		MapSqlParameterSource params = new MapSqlParameterSource("retention_time",
+				Date.from(retentionTime.toInstant()));
+		String sql = "delete from t_covid_code where expires_at < :retention_time";
+		jt.update(sql, params);
+		
 	}
 
 }

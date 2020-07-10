@@ -21,7 +21,10 @@ import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Duration;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.sql.DataSource;
 
@@ -42,6 +45,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.config.IntervalTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -138,6 +145,15 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 		logger.warn("USING FALLBACK KEYPAIR. WONT'T PERSIST APP RESTART AND PROBABLY DOES NOT HAVE ENOUGH ENTROPY.");
 
 		return Keys.keyPairFor(algorithm);
+	}
+	
+	@Override
+	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		taskRegistrar.addFixedRateTask(new IntervalTask(() -> {
+			logger.info("Start DB cleanup");
+			authzDataService().cleanDB(Duration.ofDays(retentionDays));
+			logger.info("DB cleanup up");
+		}, 60 * 60 * 1000L));
 	}
 	
 }
