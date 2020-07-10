@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Ubique Innovation AG <https://www.ubique.ch>
+ * Copyright (c) 2020 Malta Information Technology Agency <https://mita.gov.mt>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
