@@ -13,6 +13,8 @@ package org.dpppt.malta.backend.sdk.authz.ws.controller;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
@@ -30,6 +32,7 @@ import org.dpppt.malta.backend.sdk.authz.data.model.CovidCodesPage;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodeRequestModel;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodeResponseModel;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodesPageResponseModel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +55,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 @RequestMapping("/v1")
 public class CovidCodesController {
 
+	@Value("${authz.covidcode.validity.days:1}")
+	private int covidCodeValidityDays;
+	
 	private AuthzDataService covidCodesDataService;
 	
 	public CovidCodesController(AuthzDataService covidCodesDataService) {
@@ -98,9 +104,11 @@ public class CovidCodesController {
 		CovidCode cc = covidCodesDataService.get(id);
 		if (cc.isClosed()) return ResponseEntity.badRequest().build();
 		
+		Instant reg = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toInstant();
+
 		return ResponseEntity.ok(
 				mapper.covidCodeToResponseModel(
-						covidCodesDataService.updateRevoked(id, Instant.now(), token.getClaimAsString("SamAccountName"))));
+						covidCodesDataService.updateRevoked(id, reg, token.getClaimAsString("SamAccountName"))));
 		
 	}
 
@@ -112,7 +120,8 @@ public class CovidCodesController {
 		CovidCode cc = covidCodesDataService.fetchByAuthCode(authCode);
 		if (null == cc || cc.isClosed()) return ResponseEntity.badRequest().body("CovidCode does not exist or is closed");
 
-		covidCodesDataService.updateRedeemed(cc.getId(), Instant.now());
+		Instant reg = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toInstant();
+		covidCodesDataService.updateRedeemed(cc.getId(), reg);
 		
 		return ResponseEntity.noContent().build();
 		
@@ -151,9 +160,9 @@ public class CovidCodesController {
 		cc.setOnsetDate(LocalDate.parse(covidCode.getOnsetDate()));
 		cc.setTransmissionRisk(covidCode.getTransmissionRisk());
 		cc.setAuthorisationCode(generateAuthCode());
-		Instant reg = Instant.now();		
+		Instant reg = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toInstant();
 		cc.setRegisteredAt(reg);
-		cc.setExpiresAt(reg.plus(1, ChronoUnit.DAYS));
+		cc.setExpiresAt(reg.plus(covidCodeValidityDays, ChronoUnit.DAYS));
 		cc.setRegisteredBy(token.getClaimAsString("SamAccountName"));		
 				
 		cc = covidCodesDataService.insertCovidCode(cc);

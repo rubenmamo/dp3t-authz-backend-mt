@@ -12,6 +12,8 @@ package org.dpppt.malta.backend.sdk.authz.ws.controller;
 
 import java.security.KeyPair;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.UUID;
 
@@ -41,9 +43,9 @@ public class JwtTokenProvider {
 
 	public CreateTokenResult createToken(AuthenticationCodeRequestModel codeRequest, CovidCode covidCode) {
 
-		
-		Instant issuedAt = Instant.now();
+		Instant issuedAt = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toInstant();
 		Instant validity = issuedAt.plusMillis(validityInMilliseconds);
+		
 		UUID uuid = UUID.randomUUID();
 		
 		Claims claims = Jwts.claims()

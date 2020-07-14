@@ -12,6 +12,8 @@ package org.dpppt.malta.backend.sdk.authz.data.model;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +40,8 @@ public class CovidCode {
 	private List<TokenIssueLog> issueLogs;
 	
 	public boolean isExpired() {
-		return Instant.now().isAfter(expiresAt);
+		Instant now = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toInstant();
+		return now.isAfter(expiresAt);
 	}	
 	public boolean isRevoked() {
 		return revokedAt != null;
