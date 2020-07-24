@@ -55,6 +55,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 @RequestMapping("/v1")
 public class CovidCodesController {
 
+	private static final String CLAIM_USER_IDENTIFIER = "SamAccountName";
+	private static final String CLAIM_USER_IDENTIFIER_FALLBACK = "name";
+
 	@Value("${authz.covidcode.validity.days:1}")
 	private int covidCodeValidityDays;
 	
@@ -91,13 +94,26 @@ public class CovidCodesController {
 		
 	}
 	
+	private String getUserIdentifier(Authentication authentication) {
+		
+		final Jwt token = ((JwtAuthenticationToken) authentication).getToken();
+		
+		String ident = token.getClaimAsString(CLAIM_USER_IDENTIFIER);
+		if (null == ident) {
+			ident = token.getClaimAsString(CLAIM_USER_IDENTIFIER_FALLBACK);
+		}
+		if (null == ident) {
+			throw new IllegalStateException("User identifier could not be obtained from token");
+		}
+		return ident;
+		
+	}
+	
 	@CrossOrigin(origins = { "*" })
 	@DeleteMapping(value = "/codes/revoked/{id}", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<CovidCodeResponseModel> revokeCode(@PathVariable int id,
 			Authentication authentication) {
-		
-		final Jwt token = ((JwtAuthenticationToken) authentication).getToken();
 		
 		final CovidCodeMapper mapper = CovidCodeMapper.INSTANCE;
 
@@ -108,7 +124,7 @@ public class CovidCodesController {
 
 		return ResponseEntity.ok(
 				mapper.covidCodeToResponseModel(
-						covidCodesDataService.updateRevoked(id, reg, token.getClaimAsString("SamAccountName"))));
+						covidCodesDataService.updateRevoked(id, reg, getUserIdentifier(authentication))));
 		
 	}
 
@@ -148,8 +164,6 @@ public class CovidCodesController {
 			@RequestBody(required = true) CovidCodeRequestModel covidCode,
 			Authentication authentication) {
 		
-		final Jwt token = ((JwtAuthenticationToken) authentication).getToken();
-		
 		if (covidCodesDataService.specimenNumberExists(covidCode.getSpecimenNumber())) {
 			return ResponseEntity.badRequest().body("Specimen number already exists");
 		}
@@ -163,7 +177,7 @@ public class CovidCodesController {
 		Instant reg = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toInstant();
 		cc.setRegisteredAt(reg);
 		cc.setExpiresAt(reg.plus(covidCodeValidityDays, ChronoUnit.DAYS));
-		cc.setRegisteredBy(token.getClaimAsString("SamAccountName"));		
+		cc.setRegisteredBy(getUserIdentifier(authentication));		
 				
 		cc = covidCodesDataService.insertCovidCode(cc);
 		
