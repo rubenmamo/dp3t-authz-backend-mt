@@ -67,6 +67,9 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 	@Value("${ws.retentiondays: 21}")
 	int retentionDays;
 
+	@Value("${authz.jwt.allowfakes:false}")
+	boolean allowFakes;
+	
 	public abstract DataSource dataSource();
 
 	public abstract Flyway flyway();
@@ -85,7 +88,7 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 	
 	@Bean
 	public DPPPTAuthzController dppptSDKController() {
-		return new DPPPTAuthzController(jwtTokenProvider(), authzDataService());
+		return new DPPPTAuthzController(jwtTokenProvider(), authzDataService(), allowFakes);
 	}
 
 	@Bean

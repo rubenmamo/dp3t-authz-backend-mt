@@ -10,6 +10,8 @@
 
 package org.dpppt.malta.backend.sdk.authz.ws.controller;
 
+import java.time.LocalDate;
+
 import org.dpppt.malta.backend.sdk.authz.data.AuthzDataService;
 import org.dpppt.malta.backend.sdk.authz.data.model.CovidCode;
 import org.dpppt.malta.backend.sdk.authz.ws.model.AuthenticationCodeRequestModel;
@@ -34,11 +36,13 @@ public class DPPPTAuthzController {
 
 	private JwtTokenProvider jwtTokenProvider;	
 	private AuthzDataService covidCodesDataService;
+	private boolean allowFakes;
 	
-	public DPPPTAuthzController(JwtTokenProvider jwtTokenProvider, AuthzDataService covidCodesDataService) {
+	public DPPPTAuthzController(JwtTokenProvider jwtTokenProvider, AuthzDataService covidCodesDataService, boolean allowFakes) {
 		super();
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.covidCodesDataService = covidCodesDataService;
+		this.allowFakes = allowFakes;
 	}
 
 	//@CrossOrigin(origins = { "https://editor.swagger.io" })
@@ -54,15 +58,30 @@ public class DPPPTAuthzController {
 	produces="application/json")
 	public @ResponseBody ResponseEntity<AuthenticationCodeResponseModel> getAuthCode(@RequestBody(required = true) AuthenticationCodeRequestModel codeRequest) {
 		
-		CovidCode covidCode = covidCodesDataService.fetchByAuthCode(codeRequest.getAuthorizationCode());
-		
-		if (covidCode == null || covidCode.isClosed()) {
-			return ResponseEntity.notFound().build();
+		if (!allowFakes && codeRequest.getFake() == 1) {
+			return ResponseEntity.badRequest().build();
 		}
+		
+		CovidCode covidCode = null;
+		if (codeRequest.getFake() != 1) {
+			covidCode = covidCodesDataService.fetchByAuthCode(codeRequest.getAuthorizationCode());
+			
+			if (covidCode == null || covidCode.isClosed()) {
+				return ResponseEntity.notFound().build();
+			}
+			
+		} else {
+			covidCode = new CovidCode();
+			covidCode.setAuthorisationCode(codeRequest.getAuthorizationCode());		
+			covidCode.setTransmissionRisk("0");
+			covidCode.setOnsetDate(LocalDate.now().minusDays(14));
+		}		
 		
 		CreateTokenResult result = jwtTokenProvider.createToken(codeRequest, covidCode);
 		
-		covidCodesDataService.insertTokenIssueLog(covidCode, result.getIssuedAt(), result.getUuid());
+		if (codeRequest.getFake() != 1) {
+			covidCodesDataService.insertTokenIssueLog(covidCode, result.getIssuedAt(), result.getUuid());
+		}
 		
 		return ResponseEntity.ok().cacheControl(CacheControl.noCache()).body(new AuthenticationCodeResponseModel(result.getToken()));
 	}
