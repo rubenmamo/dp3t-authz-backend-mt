@@ -12,6 +12,7 @@ package org.dpppt.malta.backend.sdk.authz.security;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
@@ -27,14 +28,19 @@ public class JWTValidator implements OAuth2TokenValidator<Jwt> {
 
     private Duration maxJwtValidity;
     private String audience;
+    private List<String> allowlist;
 
-    public JWTValidator(Duration maxJwtValidity, String audience) {
+    public JWTValidator(Duration maxJwtValidity, String audience, List<String> allowlist) {
         this.maxJwtValidity = maxJwtValidity;
         this.audience = audience;
+        this.allowlist = allowlist;
     }
 
     @Override
     public OAuth2TokenValidatorResult validate(Jwt token) {
+    	if (!(allowlist.contains(token.getSubject()) || allowlist.contains("ALL"))) {
+    		return OAuth2TokenValidatorResult.failure(new OAuth2Error(OAuth2ErrorCodes.ACCESS_DENIED));
+    	}
         if (token.getExpiresAt() == null || Instant.now().plus(maxJwtValidity).isBefore(token.getExpiresAt())) {
             return OAuth2TokenValidatorResult.failure(new OAuth2Error(OAuth2ErrorCodes.INVALID_REQUEST));
         }

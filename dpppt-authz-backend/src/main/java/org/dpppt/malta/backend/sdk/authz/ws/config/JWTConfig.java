@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.time.Duration;
+import java.util.List;
 
 import org.dpppt.malta.backend.sdk.authz.security.AuthzJwtDecoder;
 import org.dpppt.malta.backend.sdk.authz.security.JWTValidator;
@@ -101,6 +102,9 @@ public class JWTConfig {
 
 		@Value("${authz.jwt.validator.audience}")
 		String jwtValidatorAud;
+
+		@Value("${authz.jwt.validator.allowlist:ALL}")
+		List<String> allowlist;
 		
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
@@ -121,7 +125,7 @@ public class JWTConfig {
 
 		@Bean
 		public JWTValidator jwtValidator() {
-			return new JWTValidator(Duration.ofMinutes(maxValidityMinutes), jwtValidatorAud);
+			return new JWTValidator(Duration.ofMinutes(maxValidityMinutes), jwtValidatorAud, allowlist);
 		}
 
 
