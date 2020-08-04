@@ -3,6 +3,9 @@
 ######################
 
 RUSTY_SWAGGER = rusty-swagger
+DOCKER_REPO = peppptdweacr.azurecr.io
+IMAGE_TAG = latest
+TARGET_ENV = dev
 
 all: clean all1
 all1: clean updateproject
@@ -21,7 +24,7 @@ swagger:
 
 docker:
 	cp dpppt-authz-backend/target/dpppt-authz-backend-1.0.0-SNAPSHOT.jar ws-authz/ws/bin/dpppt-authz-backend-1.0.0.jar
-	docker build -t peppptdweacr.azurecr.io/dpppt-mt-authz:latest ws-authz/
+	docker build --build-arg targetenv=${TARGET_ENV} -t ${DOCKER_REPO}/dpppt-mt-authz:${IMAGE_TAG} ws-authz/
 
 clean:
 	@rm -f documentation/*.log documentation/*.aux documentation/*.dvi documentation/*.ps documentation/*.blg documentation/*.bbl documentation/*.out documentation/*.bcf documentation/*.run.xml documentation/*.fdb_latexmk documentation/*.fls documentation/*.toc
