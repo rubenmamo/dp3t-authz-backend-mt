@@ -33,6 +33,7 @@ import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.dpppt.malta.backend.sdk.authz.data.AuthzDataService;
 import org.dpppt.malta.backend.sdk.authz.data.JDBCAuthzDataServiceImpl;
+import org.dpppt.malta.backend.sdk.authz.ws.HealthCheck;
 import org.dpppt.malta.backend.sdk.authz.ws.controller.CovidCodesController;
 import org.dpppt.malta.backend.sdk.authz.ws.controller.DPPPTAuthzController;
 import org.dpppt.malta.backend.sdk.authz.ws.controller.JwtTokenProvider;
@@ -55,7 +56,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 @Configuration
-@EnableScheduling
 public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfigurer {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -84,6 +84,11 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 	
 	private JwtTokenProvider jwtTokenProvider() {
 		return new JwtTokenProvider(getKeyPair(SignatureAlgorithm.RS256,getJwtPrivateKey(),getJwtPublicKey()));
+	}
+	
+	@Bean
+	public HealthCheck healthCheck() {
+		return new HealthCheck(authzDataService());
 	}
 	
 	@Bean
