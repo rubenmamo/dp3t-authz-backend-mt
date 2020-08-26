@@ -134,7 +134,9 @@ public class CovidCodesController {
 	public @ResponseBody ResponseEntity<?> redeemCode(@PathVariable String authCode) {
 		
 		CovidCode cc = covidCodesDataService.fetchByAuthCode(authCode);
-		if (null == cc || cc.isClosed()) return ResponseEntity.badRequest().body("CovidCode does not exist or is closed");
+		if (null == cc) return ResponseEntity.notFound().build();
+		if (cc.isRedeemed()) return ResponseEntity.noContent().build();
+		if (cc.isClosed()) return ResponseEntity.badRequest().body("CovidCode is closed");
 
 		Instant reg = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toInstant();
 		covidCodesDataService.updateRedeemed(cc.getId(), reg);
