@@ -214,29 +214,6 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 	}
 
 	@Override
-	public CovidCode updateCovidCode(CovidCode covidCode) {
-		String sql = "update t_covid_code" 
-				+ " set specimen_no = :specimen_no,"
-				+ " receive_date,"
-				+ " onset_date, transmission_risk, auth_code, registered_at, registered_by, revoked_at, revoked_by) "
-	            + " values (:specimen_no, :receive_date, :onset_date, :transmission_risk, :auth_code, :registered_at, :registered_by, :revoked_at, :revoked_by)";
-
-		MapSqlParameterSource params = new MapSqlParameterSource();		
-		params.addValue("specimen_no", covidCode.getSpecimenNumber());
-		params.addValue("receive_date", covidCode.getReceiveDate());
-		params.addValue("onset_date", covidCode.getOnsetDate());
-		params.addValue("transmission_risk", covidCode.getTransmissionRisk());
-		params.addValue("auth_code", covidCode.getAuthorisationCode());
-		params.addValue("registered_at", Timestamp.from(covidCode.getRegisteredAt()));
-		params.addValue("registered_by", covidCode.getRegisteredBy());
-		params.addValue("expires_at", Timestamp.from(covidCode.getExpiresAt()));
-		
-		jt.update(sql, params);
-
-		return null;
-	}
-
-	@Override
 	public CovidCodesPage search(String query, boolean all, int start, int size, String sort, boolean desc) {
 		
 		CovidCodesPage page = new CovidCodesPage();

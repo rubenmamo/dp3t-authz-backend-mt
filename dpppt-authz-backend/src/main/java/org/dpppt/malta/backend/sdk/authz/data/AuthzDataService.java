@@ -23,8 +23,6 @@ public interface AuthzDataService {
 	
 	public CovidCode insertCovidCode(CovidCode covidCode);
 	
-	public CovidCode updateCovidCode(CovidCode covidCode);
-	
 	public CovidCode get(int id);
 	
 	public CovidCode fetchByAuthCode(String authCode);
