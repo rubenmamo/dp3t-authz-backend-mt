@@ -32,6 +32,7 @@ import org.dpppt.malta.backend.sdk.authz.data.model.CovidCodesPage;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodeRequestModel;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodeResponseModel;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodesPageResponseModel;
+import org.dpppt.malta.backend.sdk.authz.ws.util.CovidCodeUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.http.HttpStatus;
@@ -189,15 +190,10 @@ public class CovidCodesController {
 	}
 	
 	private String generateAuthCode() {
-		SecureRandom rand = new SecureRandom();
 		String res = "";
 		
 		do {
-			StringBuilder authCode = new StringBuilder();
-			for (int i = 0; i < 4; i++) {
-				authCode.append(String.format("%03d", rand.nextInt(1000)));
-			}
-			res = authCode.toString();
+			res = CovidCodeUtils.generateRandom12DigitCode();
 		} while (covidCodesDataService.authCodeExists(res));
 		
 		return res;
