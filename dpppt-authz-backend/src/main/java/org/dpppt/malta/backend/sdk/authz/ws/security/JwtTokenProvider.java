@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.dpppt.malta.backend.sdk.authz.ws.controller;
+package org.dpppt.malta.backend.sdk.authz.ws.security;
 
 import java.security.KeyPair;
 import java.time.Instant;
@@ -20,6 +20,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dpppt.malta.backend.sdk.authz.data.model.CovidCode;
+import org.dpppt.malta.backend.sdk.authz.ws.controller.CreateTokenResult;
 import org.dpppt.malta.backend.sdk.authz.ws.model.AuthenticationCodeRequestModel;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.Claims;

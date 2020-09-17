@@ -23,7 +23,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 public class JWTValidator implements OAuth2TokenValidator<Jwt> {
 
-    public static final String AUD_CLAIM = "aud";
+    private static final String ACCOUNT_NAME_CLAIM = "SamAccountName";
+	public static final String AUD_CLAIM = "aud";
 
 
     private Duration maxJwtValidity;
@@ -38,7 +39,7 @@ public class JWTValidator implements OAuth2TokenValidator<Jwt> {
 
     @Override
     public OAuth2TokenValidatorResult validate(Jwt token) {
-    	if (!(allowlist.contains(token.getSubject()) || allowlist.contains("ALL"))) {
+    	if (!(allowlist.contains(token.getClaimAsString(ACCOUNT_NAME_CLAIM)) || allowlist.contains("ALL"))) {
     		return OAuth2TokenValidatorResult.failure(new OAuth2Error(OAuth2ErrorCodes.ACCESS_DENIED));
     	}
         if (token.getExpiresAt() == null || Instant.now().plus(maxJwtValidity).isBefore(token.getExpiresAt())) {

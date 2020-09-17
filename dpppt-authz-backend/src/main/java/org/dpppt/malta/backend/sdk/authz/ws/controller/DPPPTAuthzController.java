@@ -16,6 +16,7 @@ import org.dpppt.malta.backend.sdk.authz.data.AuthzDataService;
 import org.dpppt.malta.backend.sdk.authz.data.model.CovidCode;
 import org.dpppt.malta.backend.sdk.authz.ws.model.AuthenticationCodeRequestModel;
 import org.dpppt.malta.backend.sdk.authz.ws.model.AuthenticationCodeResponseModel;
+import org.dpppt.malta.backend.sdk.authz.ws.security.JwtTokenProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
