@@ -76,7 +76,7 @@ public class CovidCodesController {
 	@CrossOrigin(origins = { "*" })
 	@GetMapping(value = "/codes", 
 			produces="application/json")
-	public @ResponseBody ResponseEntity<CovidCodesPageResponseModel> getCodes(
+	public @ResponseBody ResponseEntity<?> getCodes(
 			@RequestParam(name="q", required=false, defaultValue="") String query,
 			@RequestParam(name="all", required=false, defaultValue="N") String all,
 			@RequestParam(name="start", required=false, defaultValue="0") int start,
@@ -86,7 +86,7 @@ public class CovidCodesController {
 			Authentication authentication) {
 		
 		if (!validateCodesInput(query, sort, order)) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().body("Invalid arguments");			
 		}
 		
 		final CovidCodeMapper mapper = CovidCodeMapper.INSTANCE;

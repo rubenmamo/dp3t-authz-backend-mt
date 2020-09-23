@@ -18,6 +18,7 @@ import io.jsonwebtoken.Jwts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -29,6 +30,20 @@ public class DPPPTAuthzControllerTest extends BaseControllerTest {
 
 		assertNotNull(response);
 		assertEquals("Hello from DP3T Authz WS", response.getContentAsString());
+	}
+
+	@Test
+	public void testGetCodes() throws Exception {
+		MockHttpServletResponse response200 = mockMvc.perform(get("/v1/codes?start=0&size=10&sort=specimen_no&order=ASC&all=Y"))
+				.andExpect(status().is2xxSuccessful()).andReturn().getResponse();
+
+		assertNotNull(response200);
+		
+		MockHttpServletResponse response400 = mockMvc.perform(get("/v1/codes?start=0&size=10&sort=specimen_no&order=BAD&all=Y"))
+				.andExpect(status().is4xxClientError()).andReturn().getResponse();
+
+		assertNotNull(response400);
+
 	}
 
 }
