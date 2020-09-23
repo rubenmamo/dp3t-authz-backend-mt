@@ -107,10 +107,10 @@ public class CovidCodesController {
 		if (null != query && query.length() > 0 && !Pattern.compile(REGEX_CODES_QUERY).matcher(query).matches()) {
 			return false;
 		}
-		if (null != sort && sort.length() > 0 && !Pattern.compile(REGEX_CODES_SORT).matcher(query).matches()) {
+		if (null != sort && sort.length() > 0 && !Pattern.compile(REGEX_CODES_SORT).matcher(sort).matches()) {
 			return false;
 		}
-		if (null != order && order.length() > 0 && !Pattern.compile(REGEX_CODES_ORDER).matcher(query).matches()) {
+		if (null != order && order.length() > 0 && !Pattern.compile(REGEX_CODES_ORDER).matcher(order).matches()) {
 			return false;
 		}
 		return true;
