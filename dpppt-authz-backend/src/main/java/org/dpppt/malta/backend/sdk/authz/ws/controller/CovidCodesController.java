@@ -104,7 +104,7 @@ public class CovidCodesController {
 	}
 
 	private boolean validateCodesInput(String query, String sort, String order) {
-		if (!Pattern.compile(REGEX_CODES_QUERY).matcher(query).matches()) {
+		if (null != query && query.length() > 0 && !Pattern.compile(REGEX_CODES_QUERY).matcher(query).matches()) {
 			return false;
 		}
 		if (null != sort && sort.length() > 0 && !Pattern.compile(REGEX_CODES_SORT).matcher(query).matches()) {
