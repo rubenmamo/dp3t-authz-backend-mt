@@ -21,6 +21,7 @@ import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 @RequestMapping("/v1")
 public class CovidCodesController {
 
+	private static final String REGEX_CODES_ORDER = "^(ASC|asc|DESC|desc){1}$";
+	private static final String REGEX_CODES_SORT = "^[a-zA-Z0-9_]+$";
+	private static final String REGEX_CODES_QUERY = "^[A-Z]{2}[0-9]{6}[A-Z]{1}$";
 	private static final String CLAIM_USER_IDENTIFIER = "SamAccountName";
 	private static final String CLAIM_USER_IDENTIFIER_FALLBACK = "name";
 
@@ -81,6 +85,10 @@ public class CovidCodesController {
 			@RequestParam(name="order", required=false, defaultValue="ASC") String order,
 			Authentication authentication) {
 		
+		if (!validateCodesInput(query, sort, order)) {
+			return ResponseEntity.badRequest().build();
+		}
+		
 		final CovidCodeMapper mapper = CovidCodeMapper.INSTANCE;
 		CovidCodesPage page = covidCodesDataService.search(query, "Y".equals(all), start, size, sort, "DESC".equals(order));
 		
@@ -93,6 +101,19 @@ public class CovidCodesController {
 		
 		return ResponseEntity.ok(new CovidCodesPageResponseModel(codes, page.getTotal()));
 		
+	}
+
+	private boolean validateCodesInput(String query, String sort, String order) {
+		if (!Pattern.compile(REGEX_CODES_QUERY).matcher(query).matches()) {
+			return false;
+		}
+		if (null != sort && sort.length() > 0 && !Pattern.compile(REGEX_CODES_SORT).matcher(query).matches()) {
+			return false;
+		}
+		if (null != order && order.length() > 0 && !Pattern.compile(REGEX_CODES_ORDER).matcher(query).matches()) {
+			return false;
+		}
+		return true;
 	}
 	
 	private String getUserIdentifier(Authentication authentication) {
