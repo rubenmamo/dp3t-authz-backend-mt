@@ -155,13 +155,4 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 		return Keys.keyPairFor(algorithm);
 	}
 	
-	@Override
-	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-		taskRegistrar.addFixedRateTask(new IntervalTask(() -> {
-			logger.info("Start DB cleanup");
-			authzDataService().cleanDB(Duration.ofDays(retentionDays));
-			logger.info("DB cleanup up");
-		}, 60 * 60 * 1000L));
-	}
-	
 }

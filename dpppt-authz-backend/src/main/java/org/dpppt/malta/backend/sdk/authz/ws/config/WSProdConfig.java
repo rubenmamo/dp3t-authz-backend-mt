@@ -10,6 +10,7 @@
 
 package org.dpppt.malta.backend.sdk.authz.ws.config;
 
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Properties;
 
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -64,11 +66,6 @@ public class WSProdConfig extends WSBaseConfig {
 
 	@Value("${datasource.connectionTimeout}")
 	String dataSourceConnectionTimeout;
-
-	@Override
-	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-
-	}
 
     @Override
     String getHashFilterPrivateKey() {
@@ -117,5 +114,13 @@ public class WSProdConfig extends WSBaseConfig {
 		return "pgsql";
 	}
 	
+	@Override
+	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		taskRegistrar.addFixedRateTask(new IntervalTask(() -> {
+			logger.info("Start DB cleanup");
+			authzDataService().cleanDB(Duration.ofDays(retentionDays));
+			logger.info("DB cleanup up");
+		}, 60 * 60 * 1000L));
+	}
 
 }
