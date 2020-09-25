@@ -192,11 +192,7 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 			sql += buildSearchQuery(query, all);
 			sql += " order by " + sort;		
 			if (desc) sql += " desc";
-			if (size > 0) {
-				sql += " limit " + size;
-			} else {
-				sql += " limit 100";
-			}
+			sql += " limit " + (size > 100 || size == 0 ? 100 : size);
 			if (start > 0) {
 				sql += " offset " + start;
 			}
