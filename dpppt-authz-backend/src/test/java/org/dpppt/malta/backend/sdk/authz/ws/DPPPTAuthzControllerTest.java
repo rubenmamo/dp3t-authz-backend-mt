@@ -39,21 +39,38 @@ public class DPPPTAuthzControllerTest extends BaseControllerTest {
 
 		assertNotNull(response200);
 		
-		MockHttpServletResponse response400 = mockMvc.perform(get("/v1/codes?start=0&size=10&sort=specimen_no&order=BAD&all=Y"))
-				.andExpect(status().is4xxClientError()).andReturn().getResponse();
-
-		assertNotNull(response400);
-
 	}
 
 	@Test
-	public void testSqlInject1() throws Exception {
+	public void testSqlInjectOnQuery() throws Exception {
 		
 		MockHttpServletResponse response400 = mockMvc.perform(get("/v1/codes?all=false&q=1%27%20UNION%20SELECT%201%2C2%2C3--%2B"))
 				.andExpect(status().is4xxClientError()).andReturn().getResponse();
 
 		assertNotNull(response400);
-
+		assertEquals("Invalid arguments", response400.getContentAsString());
 	}
 	
+	@Test
+	public void testSqlInjectOnSort() throws Exception {
+		
+		MockHttpServletResponse response400 = mockMvc.perform(get("/v1/codes?all=false&sort=1%27%20UNION%20SELECT%201%2C2%2C3--%2B"))
+				.andExpect(status().is4xxClientError()).andReturn().getResponse();
+
+		assertNotNull(response400);
+		assertEquals("Invalid arguments", response400.getContentAsString());
+
+	}
+
+	@Test
+	public void testSqlInjectOnOrder() throws Exception {
+		
+		MockHttpServletResponse response400 = mockMvc.perform(get("/v1/codes?all=false&order=1%27%20UNION%20SELECT%201%2C2%2C3--%2B"))
+				.andExpect(status().is4xxClientError()).andReturn().getResponse();
+
+		assertNotNull(response400);
+		assertEquals("Invalid arguments", response400.getContentAsString());
+
+	}
+
 }
