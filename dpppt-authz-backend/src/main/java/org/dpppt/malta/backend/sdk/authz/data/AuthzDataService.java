@@ -29,11 +29,7 @@ public interface AuthzDataService {
 	
 	public CovidCode updateRevoked(int id, Instant at, String by);
 	
-	public List<CovidCode> getAll(int start, int size, String sort, boolean desc);
-	
 	public CovidCodesPage search(String query, boolean all, int start, int size, String sort, boolean desc);
-	
-	public List<CovidCode> fetchBySpecimenNumber(String specimen_no, int start, int size, String sort, boolean desc);
 	
 	public boolean authCodeExists(String authCode);
 

@@ -80,42 +80,6 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 	}
 
 	@Override
-	public List<CovidCode> getAll(int start, int size, String sort, boolean desc) {
-		if (null == sort) sort = "specimen_no";
-		
-		String sql = "select * from t_covid_code order by " + sort;		
-		if (desc) sql += " desc";
-		if (size > 0) {
-			sql += " limit " + size;
-		}
-		if (start > 0) {
-			sql += " offset " + start;
-		}
-		logger.debug("Running query: " + sql);
-		
-		return jt.query(sql, new CovidCodeRowMapper());
-	}
-
-	@Override
-	public List<CovidCode> fetchBySpecimenNumber(String specimen_no, int start, int size, String sort, boolean desc) {
-		
-		if (null == sort) sort = "specimen_no";
-		
-		String sql = "select * from t_covid_code where specimen_no = :specimen_no order by " + sort;		
-		if (desc) sql += " desc";
-		if (size > 0) {
-			sql += " limit " + size;
-		}
-		if (start > 0) {
-			sql += " offset " + start;
-		}
-		MapSqlParameterSource params = new MapSqlParameterSource();
-		params.addValue("specimen_no", specimen_no);
-		
-		return jt.query(sql, new CovidCodeRowMapper());
-	}
-
-	@Override
 	public boolean authCodeExists(String authCode) {
 		String sql = "select count(*) from t_covid_code where auth_code = :auth_code";
 		MapSqlParameterSource params = new MapSqlParameterSource();
@@ -230,6 +194,8 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 			if (desc) sql += " desc";
 			if (size > 0) {
 				sql += " limit " + size;
+			} else {
+				sql += " limit 100";
 			}
 			if (start > 0) {
 				sql += " offset " + start;

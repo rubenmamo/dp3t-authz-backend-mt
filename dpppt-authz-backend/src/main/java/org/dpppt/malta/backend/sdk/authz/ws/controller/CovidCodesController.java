@@ -58,8 +58,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 public class CovidCodesController {
 
 	private static final String REGEX_CODES_ORDER = "^(ASC|asc|DESC|desc){1}$";
-	private static final String REGEX_CODES_SORT = "^[a-zA-Z0-9_]+$";
-	private static final String REGEX_CODES_QUERY = "^[A-Z]{2}[0-9]{6}[A-Z]{1}$";
+	private static final String REGEX_CODES_SORT = "^[\\w_]+$";
+	private static final String REGEX_CODES_QUERY = "^[\\w]+$";
 	private static final String CLAIM_USER_IDENTIFIER = "SamAccountName";
 	private static final String CLAIM_USER_IDENTIFIER_FALLBACK = "name";
 
@@ -73,7 +73,7 @@ public class CovidCodesController {
 		this.covidCodesDataService = covidCodesDataService;
 	}
 
-	@CrossOrigin(origins = { "*" })
+	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@GetMapping(value = "/codes", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<?> getCodes(
@@ -85,7 +85,7 @@ public class CovidCodesController {
 			@RequestParam(name="order", required=false, defaultValue="ASC") String order,
 			Authentication authentication) {
 		
-		if (!validateCodesInput(query, sort, order)) {
+		if (!validateQuery(query) || !validateSortAndOrder(sort, order)) {
 			return ResponseEntity.badRequest().body("Invalid arguments");			
 		}
 		
@@ -103,10 +103,14 @@ public class CovidCodesController {
 		
 	}
 
-	private boolean validateCodesInput(String query, String sort, String order) {
+	private boolean validateQuery(String query) {
 		if (null != query && query.length() > 0 && !Pattern.compile(REGEX_CODES_QUERY).matcher(query).matches()) {
 			return false;
 		}
+		return true;
+	}
+	
+	private boolean validateSortAndOrder(String sort, String order) {
 		if (null != sort && sort.length() > 0 && !Pattern.compile(REGEX_CODES_SORT).matcher(sort).matches()) {
 			return false;
 		}
@@ -115,7 +119,7 @@ public class CovidCodesController {
 		}
 		return true;
 	}
-	
+
 	private String getUserIdentifier(Authentication authentication) {
 		
 		final Jwt token = ((JwtAuthenticationToken) authentication).getToken();
@@ -131,7 +135,7 @@ public class CovidCodesController {
 		
 	}
 	
-	@CrossOrigin(origins = { "*" })
+	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@DeleteMapping(value = "/codes/revoked/{id}", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<CovidCodeResponseModel> revokeCode(@PathVariable int id,
@@ -150,7 +154,7 @@ public class CovidCodesController {
 		
 	}
 
-	@CrossOrigin(origins = { "*" })
+	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@DeleteMapping(value = "/codes/redeemed/{authCode}", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<?> redeemCode(@PathVariable String authCode) {
@@ -167,7 +171,7 @@ public class CovidCodesController {
 		
 	}
 
-	@CrossOrigin(origins = { "*" })
+	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@GetMapping(value = "/codes/{id}", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<CovidCodeResponseModel> getCode(@PathVariable int id) {
@@ -180,7 +184,7 @@ public class CovidCodesController {
 		
 	}
 	
-	@CrossOrigin(origins = { "*" })
+	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@PostMapping(value = "/codes", 
 			consumes="application/json", 
 			produces="application/json")
