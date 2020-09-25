@@ -35,6 +35,8 @@ Depending on the enabled profiles, the server expects the following configuratio
 | authz.prod.jwt.privateKey |
 | authz.prod.jwt.privateKey |
 
+TODO List all configuration parameters
+
 The server requires a number of key pairs to operate: a key pair for signing responses and another to sign JWT tokens. These should be provided in the server's configuration. 
 
 If ommitted, temporary key pairs will be generated for testing purposes.

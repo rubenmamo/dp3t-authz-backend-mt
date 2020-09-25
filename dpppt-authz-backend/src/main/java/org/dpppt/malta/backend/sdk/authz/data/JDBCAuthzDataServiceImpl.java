@@ -185,7 +185,7 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 		if (null == sort) sort = "specimen_no";
 
 		MapSqlParameterSource params = new MapSqlParameterSource();		
-		if (null != query && query.length() > 0) params.addValue("specimen_no", query);
+		if (null != query && query.length() > 0) params.addValue("specimen_no", "%" + query + "%");
 		
 		String countSql = "select count(*)" + buildSearchQuery(query, all);		
 		int total = jt.queryForObject(countSql, params, Integer.class);
@@ -211,7 +211,7 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 	private String buildSearchQuery(String query, boolean all) {
 		String sql = " from t_covid_code";
 		if (null != query && query.length() > 0) {
-			sql += " where specimen_no = :specimen_no";
+			sql += " where specimen_no like :specimen_no";
 		}
 		if (!all) {
 			sql += (null == query || query.length() == 0) ? " where" : " and";
