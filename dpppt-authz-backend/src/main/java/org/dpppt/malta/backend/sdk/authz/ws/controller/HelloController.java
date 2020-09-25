@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/")
 public class HelloController {
 
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@GetMapping(value = "")
 	public @ResponseBody String hello() {
 		return "Hello from DP3T Authz WS";

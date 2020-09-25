@@ -46,13 +46,11 @@ public class DPPPTAuthzController {
 		this.allowFakes = allowFakes;
 	}
 
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@GetMapping(value = "")
 	public @ResponseBody String hello() {
 		return "Hello from DP3T Authz WS";
 	}
 
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@PostMapping(value = "/onset", 
 	consumes="application/json", 
 	produces="application/json")

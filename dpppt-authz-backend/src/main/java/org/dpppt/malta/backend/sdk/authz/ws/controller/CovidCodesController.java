@@ -10,22 +10,14 @@
 
 package org.dpppt.malta.backend.sdk.authz.ws.controller;
 
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.swing.text.DateFormatter;
 
 import org.dpppt.malta.backend.sdk.authz.data.AuthzDataService;
 import org.dpppt.malta.backend.sdk.authz.data.model.CovidCode;
@@ -35,14 +27,10 @@ import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodeResponseModel;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodesPageResponseModel;
 import org.dpppt.malta.backend.sdk.authz.ws.util.CovidCodeUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,7 +61,6 @@ public class CovidCodesController {
 		this.covidCodesDataService = covidCodesDataService;
 	}
 
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@GetMapping(value = "/codes", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<?> getCodes(
@@ -135,7 +122,6 @@ public class CovidCodesController {
 		
 	}
 	
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@DeleteMapping(value = "/codes/revoked/{id}", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<CovidCodeResponseModel> revokeCode(@PathVariable int id,
@@ -154,7 +140,6 @@ public class CovidCodesController {
 		
 	}
 
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@DeleteMapping(value = "/codes/redeemed/{authCode}", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<?> redeemCode(@PathVariable String authCode) {
@@ -171,7 +156,6 @@ public class CovidCodesController {
 		
 	}
 
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@GetMapping(value = "/codes/{id}", 
 			produces="application/json")
 	public @ResponseBody ResponseEntity<CovidCodeResponseModel> getCode(@PathVariable int id) {
@@ -184,7 +168,6 @@ public class CovidCodesController {
 		
 	}
 	
-	@CrossOrigin(origins = { "https://editor.swagger.io" })
 	@PostMapping(value = "/codes", 
 			consumes="application/json", 
 			produces="application/json")
