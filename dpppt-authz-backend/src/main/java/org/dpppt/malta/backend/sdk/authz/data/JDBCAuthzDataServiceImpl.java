@@ -183,9 +183,12 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 		CovidCodesPage page = new CovidCodesPage();
 		
 		if (null == sort) sort = "specimen_no";
+
+		MapSqlParameterSource params = new MapSqlParameterSource();		
+		if (null != query && query.length() > 0) params.addValue("specimen_no", query);
 		
-		String countSql = "select count(*)" + buildSearchQuery(query, all);
-		int total = jt.queryForObject(countSql, new MapSqlParameterSource(), Integer.class);
+		String countSql = "select count(*)" + buildSearchQuery(query, all);		
+		int total = jt.queryForObject(countSql, params, Integer.class);
 		page.setTotal(total);
 		if (total > 0) {	
 			String sql = "select *";
@@ -198,7 +201,7 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 			}
 			logger.debug("Running query: " + sql);
 			
-			page.setCovidCodes(jt.query(sql, new CovidCodeRowMapper()));
+			page.setCovidCodes(jt.query(sql, params, new CovidCodeRowMapper()));
 		} else {
 			page.setCovidCodes(new ArrayList<CovidCode>());
 		}
@@ -208,7 +211,7 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 	private String buildSearchQuery(String query, boolean all) {
 		String sql = " from t_covid_code";
 		if (null != query && query.length() > 0) {
-			sql += " where specimen_no = '" + query + "'";
+			sql += " where specimen_no = :specimen_no";
 		}
 		if (!all) {
 			sql += (null == query || query.length() == 0) ? " where" : " and";
@@ -236,7 +239,7 @@ public class JDBCAuthzDataServiceImpl implements AuthzDataService {
 		MapSqlParameterSource params = new MapSqlParameterSource("retention_time",
 				Date.from(retentionTime.toInstant()));
 		String sql = "delete from t_covid_code where expires_at < :retention_time";
-		jt.update(sql, params);
+		jt.update(sql, params);		
 		
 	}
 
