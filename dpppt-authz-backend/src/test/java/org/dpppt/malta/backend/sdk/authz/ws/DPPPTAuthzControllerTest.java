@@ -46,4 +46,14 @@ public class DPPPTAuthzControllerTest extends BaseControllerTest {
 
 	}
 
+	@Test
+	public void testSqlInject1() throws Exception {
+		
+		MockHttpServletResponse response400 = mockMvc.perform(get("/v1/codes?all=false&q=1%27%20UNION%20SELECT%201%2C2%2C3--%2B"))
+				.andExpect(status().is4xxClientError()).andReturn().getResponse();
+
+		assertNotNull(response400);
+
+	}
+	
 }
