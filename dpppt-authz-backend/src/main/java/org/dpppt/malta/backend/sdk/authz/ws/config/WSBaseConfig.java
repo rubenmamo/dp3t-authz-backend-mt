@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.CronTask;
@@ -87,18 +88,18 @@ public abstract class WSBaseConfig implements SchedulingConfigurer, WebMvcConfig
 	}
 	
 	@Bean
-	public HealthCheck healthCheck() {
-		return new HealthCheck(authzDataService());
+	public HealthCheck healthCheck(AuthzDataService authzDataService) {
+		return new HealthCheck(authzDataService);
 	}
 	
 	@Bean
-	public DPPPTAuthzController dppptSDKController() {
-		return new DPPPTAuthzController(jwtTokenProvider(), authzDataService(), allowFakes);
+	public DPPPTAuthzController dppptSDKController(AuthzDataService authzDataService) {
+		return new DPPPTAuthzController(jwtTokenProvider(), authzDataService, allowFakes);
 	}
 
 	@Bean
-	public CovidCodesController covidCodesController() {
-		return new CovidCodesController(authzDataService());
+	public CovidCodesController covidCodesController(AuthzDataService authzDataService, Environment environment) {
+		return new CovidCodesController(authzDataService, environment);
 	}
 	
 	@Bean

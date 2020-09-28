@@ -27,6 +27,8 @@ import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodeResponseModel;
 import org.dpppt.malta.backend.sdk.authz.ws.model.CovidCodesPageResponseModel;
 import org.dpppt.malta.backend.sdk.authz.ws.util.CovidCodeUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -55,10 +57,12 @@ public class CovidCodesController {
 	private int covidCodeValidityDays;
 	
 	private AuthzDataService covidCodesDataService;
+	private Environment environment;
 	
-	public CovidCodesController(AuthzDataService covidCodesDataService) {
+	public CovidCodesController(AuthzDataService covidCodesDataService, Environment environment) {
 		super();
 		this.covidCodesDataService = covidCodesDataService;
+		this.environment = environment;
 	}
 
 	@GetMapping(value = "/codes", 
@@ -108,6 +112,10 @@ public class CovidCodesController {
 	}
 
 	private String getUserIdentifier(Authentication authentication) {
+		
+		if (!environment.acceptsProfiles(Profiles.of("jwt"))) {
+			return "Anonymous";
+		}		
 		
 		final Jwt token = ((JwtAuthenticationToken) authentication).getToken();
 		
